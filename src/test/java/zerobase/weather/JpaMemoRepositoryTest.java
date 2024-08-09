@@ -24,8 +24,10 @@ public class JpaMemoRepositoryTest {
     void insertMemoTest(){
         //given
         Memo newMemo = new Memo(10, "this is jpa memo");
+
         //when
         jpaMemoRepository.save(newMemo);
+
         //then
         List<Memo> memoList = jpaMemoRepository.findAll();
         assertTrue(memoList.size() > 0);
