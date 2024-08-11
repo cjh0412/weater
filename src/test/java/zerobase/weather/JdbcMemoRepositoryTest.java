@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // 테스트 정보가 변경되지 않도록 막는 어노테이션
 // 해당 어노테이션이 활성화 되어 있는 경우
 // 테스트를 실행하더라도 기존 데이터에 영향 x
+// 모든 데이터 rollback 처리
 @Transactional
 public class JdbcMemoRepositoryTest {
 
