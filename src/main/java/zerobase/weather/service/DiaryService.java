@@ -68,14 +68,20 @@ public class DiaryService {
         DateWeather dateWeather = getDateWeather(date);
 
         //파싱된 데이터 + 일기 값 db 저장하기
-        Diary nowDiary = new Diary();
-        nowDiary.setDateWeather(dateWeather);
-        nowDiary.setText(text);
+//
+//        nowDiary.setDateWeather(dateWeather);
+//        nowDiary.setText(text);
+
 //        nowDiary.setWeather(parseWeather.get("main").toString());
 //        nowDiary.setIcon(parseWeather.get("icon").toString());
 //        nowDiary.setTemperature((Double) parseWeather.get("temp"));
 //        nowDiary.setDate(date);
+
+        Diary nowDiary = new Diary();
+        nowDiary.setDateWeather(dateWeather, text);
         diaryRepository.save(nowDiary);
+
+        System.out.println(diaryRepository.save(nowDiary));
 
         logger.info("finished to create diary");
     }
@@ -160,11 +166,20 @@ public class DiaryService {
 
         //날씨 json 파싱하기
         Map<String, Object> parseWeather = parseWeather(weatherData);
-        DateWeather dateWeather = new DateWeather();
-        dateWeather.setDate(LocalDate.now());
-        dateWeather.setWeather(parseWeather.get("main").toString());
-        dateWeather.setIcon(parseWeather.get("icon").toString());
-        dateWeather.setTemperature((Double) parseWeather.get("temp"));
+// setter 제거후 builder 사용
+//        DateWeather dateWeather = new DateWeather();
+//        dateWeather.setDate(LocalDate.now());
+//        dateWeather.setWeather(parseWeather.get("main").toString());
+//        dateWeather.setIcon(parseWeather.get("icon").toString());
+//        dateWeather.setTemperature((Double) parseWeather.get("temp"));
+
+        DateWeather dateWeather = DateWeather
+                .builder()
+                .date(LocalDate.now())
+                .weather(parseWeather.get("main").toString())
+                .icon(parseWeather.get("icon").toString())
+                .temperature((Double) parseWeather.get("temp"))
+                .build();
 
         return dateWeather;
     }
@@ -188,10 +203,21 @@ public class DiaryService {
     }
 
     public void updateDiary(LocalDate date, String text) {
+        // setter 제거
+        //동일 날짜의 일기가 존재할 경우 첫번째 일기 데이터 가져옴
         Diary nowDiary = diaryRepository.getFirstByDate(date);
         //일기값만 수정
-        nowDiary.setText(text);
-        diaryRepository.save(nowDiary);
+//        nowDiary.setText(text);
+        Diary saveDiary = Diary.builder()
+                .id(nowDiary.getId())
+                .text(text)
+                .date(nowDiary.getDate())
+                .weather(nowDiary.getWeather())
+                .temperature(nowDiary.getTemperature())
+                .icon(nowDiary.getIcon())
+                .build();
+
+        diaryRepository.save(saveDiary);
     }
 
     public void deleteDiary(LocalDate date) {
